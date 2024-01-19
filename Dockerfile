@@ -1,0 +1,4 @@
+ARG DEBIAN_VERSION=11.8-slim
+FROM debian:${DEBIAN_VERSION}
+
+ENTRYPOINT ["/bin/bash", "-c"]
