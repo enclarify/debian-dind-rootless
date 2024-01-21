@@ -16,6 +16,7 @@ RUN apt-get update -y \
         ca-certificates \
         iproute2 \
         iptables \
+        jq \
         sudo \
         uidmap \
         fuse-overlayfs \
@@ -26,6 +27,9 @@ RUN apt-get update -y \
 RUN --mount=type=bind,source=setup-rootless-users.sh,target=/usr/bin/setup-rootless-users.sh \
     setup-rootless-users.sh
 
+COPY entrypoint.sh /usr/bin/
+RUN chmod +x /usr/bin/entrypoint.sh
+
 # rootlesskit needs to be installed by the rootless user
 USER rootless
 RUN export SKIP_IPTABLES=1 \
@@ -35,3 +39,4 @@ RUN export SKIP_IPTABLES=1 \
 VOLUME /var/lib/docker
 VOLUME /home/rootless/.local/share/docker
 ENTRYPOINT ["/bin/bash", "-c"]
+CMD ["entrypoint.sh"]
