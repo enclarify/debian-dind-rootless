@@ -1,6 +1,7 @@
 ARG DEBIAN_VERSION=11.8-slim
 FROM debian:${DEBIAN_VERSION}
 
+ENV CHANNEL=stable
 ENV ROOTLESS_UID=1000
 ENV HOME=/home/rootless
 
@@ -25,5 +26,12 @@ RUN apt-get update -y \
 RUN --mount=type=bind,source=setup-rootless-users.sh,target=/usr/bin/setup-rootless-users.sh \
     setup-rootless-users.sh
 
+# rootlesskit needs to be installed by the rootless user
 USER rootless
+RUN export SKIP_IPTABLES=1 \
+    && curl -fsSL https://get.docker.com/rootless | sh \
+    && /home/rootless/bin/docker -v
+
+VOLUME /var/lib/docker
+VOLUME /home/rootless/.local/share/docker
 ENTRYPOINT ["/bin/bash", "-c"]
