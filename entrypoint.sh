@@ -2,6 +2,40 @@
 
 set -e
 
+wait-for-proc-stop() {
+    local pid=$1
+    while [ -e /proc/${pid} ]
+    do
+        echo "Process: ${pid} is still running"
+        sleep .5
+    done
+    echo "Process ${pid} has finished"
+}
+
+cleanup() {
+    echo "Stopping any running containers"
+    local container_pids=$(docker ps -aq -f "status=running")
+    echo "Sending SIGHUP to shutdown any containers running a shell like bash"
+    docker stop -s SIGHUP ${container_pids}
+    echo "Sending SIGINT to any running containers"
+    docker stop -s SIGINT ${container_pids}
+    echo "Sending SIGTERM to any running containers"
+    docker stop -s SIGTERM ${container_pids}
+    echo "Waiting for containers to stop"
+    docker wait ${container_pids}
+
+    local containerd_pid=$(pgrep containerd)
+    local dockerd_pid=$(pgrep dockerd)
+
+    echo "Sending SIGTERM to dockerd"
+    kill -s SIGTERM ${dockerd_pid}
+
+    wait-for-proc-stop ${containerd_pid}
+    wait-for-proc-stop ${dockerd_pid}
+}
+
+trap cleanup SIGTERM
+
 create-attribute() {
     local key=$1
     local value=$2
@@ -55,4 +89,7 @@ default_pool=$(create-default-address-pool ${POOL_BASE} ${POOL_SIZE})
 echo "${existing_config} ${debug} ${hosts} ${registry_mirrors} ${insecure_registries} ${dns} ${dns_opts} ${dns_search} ${labels} ${default_pool}" \
 | jq -s add > ${HOME}/.config/docker/daemon.json
 
-exec ${HOME}/bin/dockerd-rootless.sh --config-file ${HOME}/.config/docker/daemon.json
+${HOME}/bin/dockerd-rootless.sh --config-file ${HOME}/.config/docker/daemon.json &
+
+ROOTLESS_PID=$!
+wait "${ROOTLESS_PID}"
