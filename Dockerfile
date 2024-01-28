@@ -20,6 +20,7 @@ RUN apt-get update -y \
         sudo \
         uidmap \
         fuse-overlayfs \
+        procps \
         --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
 
