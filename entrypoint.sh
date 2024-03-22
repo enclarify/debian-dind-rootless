@@ -15,14 +15,17 @@ wait-for-proc-stop() {
 cleanup() {
     echo "Stopping any running containers"
     local container_pids=$(docker ps -aq -f "status=running")
-    echo "Sending SIGHUP to shutdown any containers running a shell like bash"
-    docker stop -s SIGHUP ${container_pids}
-    echo "Sending SIGINT to any running containers"
-    docker stop -s SIGINT ${container_pids}
-    echo "Sending SIGTERM to any running containers"
-    docker stop -s SIGTERM ${container_pids}
-    echo "Waiting for containers to stop"
-    docker wait ${container_pids}
+
+    if [ -n "${container_pids}" ]; then
+        echo "Sending SIGHUP to shutdown any containers running a shell like bash"
+        docker stop -s SIGHUP ${container_pids}
+        echo "Sending SIGINT to any running containers"
+        docker stop -s SIGINT ${container_pids}
+        echo "Sending SIGTERM to any running containers"
+        docker stop -s SIGTERM ${container_pids}
+        echo "Waiting for containers to stop"
+        docker wait ${container_pids}
+    fi
 
     local containerd_pid=$(pgrep containerd)
     local dockerd_pid=$(pgrep dockerd)
