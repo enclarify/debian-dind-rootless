@@ -40,5 +40,4 @@ RUN export SKIP_IPTABLES=1 \
 
 VOLUME /var/lib/docker
 VOLUME /home/rootless/.local/share/docker
-ENTRYPOINT ["/bin/bash", "-c"]
-CMD ["entrypoint.sh"]
+ENTRYPOINT ["/usr/bin/entrypoint.sh"]
