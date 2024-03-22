@@ -8,6 +8,7 @@ ENV HOME=/home/rootless
 ENV PATH="${PATH}:${HOME}/.local/bin:${HOME}/bin"
 ENV DOCKER_HOST="unix:///run/user/${ROOTLESS_UID}/docker.sock"
 ENV XDG_RUNTIME_DIR="/run/user/${ROOTLESS_UID}"
+ENV XDG_CONFIG_HOME="${HOME}/.config"
 
 ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get update -y \
@@ -39,5 +40,4 @@ RUN export SKIP_IPTABLES=1 \
 
 VOLUME /var/lib/docker
 VOLUME /home/rootless/.local/share/docker
-ENTRYPOINT ["/bin/bash", "-c"]
-CMD ["entrypoint.sh"]
+ENTRYPOINT ["/usr/bin/entrypoint.sh"]
