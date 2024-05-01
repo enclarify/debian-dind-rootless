@@ -30,12 +30,15 @@ RUN --mount=type=bind,source=setup-rootless-users.sh,target=/usr/bin/setup-rootl
     setup-rootless-users.sh
 
 COPY entrypoint.sh /usr/bin/
-RUN chmod +x /usr/bin/entrypoint.sh
+RUN chmod +x /usr/bin/entrypoint.sh \
+    && chown rootless:rootless /run
 
 # rootlesskit needs to be installed by the rootless user
 USER rootless
 RUN export SKIP_IPTABLES=1 \
     && curl -fsSL https://get.docker.com/rootless | sh \
+    && echo "Removing the '--copy-up=/run' from the dockerd-rootless.sh to allow /run/docker.sock" \
+    && sed -i 's| --copy-up=/run||g' /home/rootless/bin/dockerd-rootless.sh \
     && /home/rootless/bin/docker -v
 
 VOLUME /var/lib/docker

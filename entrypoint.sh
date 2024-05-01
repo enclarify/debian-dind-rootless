@@ -39,7 +39,7 @@ cleanup() {
 
 trap cleanup SIGTERM
 
-${HOME}/bin/dockerd-rootless.sh "$@" &
+${HOME}/bin/dockerd-rootless.sh -H unix://${XDG_RUNTIME_DIR}/docker.sock -H unix:///run/docker.sock "$@" &
 
 ROOTLESS_PID=$!
 wait "${ROOTLESS_PID}"
