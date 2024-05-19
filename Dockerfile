@@ -16,11 +16,9 @@ RUN apt-get update -y \
         curl \
         ca-certificates \
         iproute2 \
-        iptables \
         jq \
         sudo \
         uidmap \
-        fuse-overlayfs \
         procps \
         --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
