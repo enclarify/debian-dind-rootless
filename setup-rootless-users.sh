@@ -8,11 +8,12 @@ usermod -aG sudo rootless
 mkdir -p ${XDG_RUNTIME_DIR}
 chown -R rootless:rootless ${XDG_RUNTIME_DIR}
 chmod a+x ${XDG_RUNTIME_DIR}
+mkdir -p ${HOME}/bin
 mkdir -p ${HOME}/.config/docker
 mkdir -p ${HOME}/.local/share/docker
-chown -R rootless:rootless ${HOME}/.config
-chown -R rootless:rootless ${HOME}/.local
+chown -R rootless:rootless ${HOME}
 
+# Reference https://docs.docker.com/engine/security/userns-remap/
 echo 'Creating subuid and subgid to enable "--userns-remap=default"'
 addgroup --system dockremap
 adduser --system --ingroup dockremap dockremap
