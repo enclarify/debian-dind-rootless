@@ -6,9 +6,27 @@
 
 A Docker image similar to https://hub.docker.com/\_/docker but based on Debian and Rootless Docker only. The image at https://hub.docker.com/\_/docker is based on Alpine Linux which makes using some Docker extensions like the `nvidia-container-toolkit` impossible since it relies on glibc.
 
+The core purpose this project and it's use of rootless dind is the simplicity it brings for developement and CI/CD use cases, not security. The user namespace mapping solves many quality of life issues when files are being shared and modified on the host and in the container at the same time.
+
+## Features
+
+- Rootless dockerd running on Debian
+- Use existing projects simpler because dockerd listens at both:
+    - ${XDG_RUNTIME_DIR}/docker.sock 
+    - /var/run/docker.sock 
+
 ## Configuration
 
 All configuration as described on https://hub.docker.com/\_/docker for the rootless tags are supported by this project.
+
+Rootlesskit specific variables can be supplied to override defaults:
+
+DOCKERD_ROOTLESS_ROOTLESSKIT_STATE_DIR=DIR: the rootlesskit state dir. Defaults to "$XDG_RUNTIME_DIR/dockerd-rootless".
+DOCKERD_ROOTLESS_ROOTLESSKIT_NET=(slirp4netns|vpnkit|pasta|lxc-user-nic): the rootlesskit network driver. Defaults to "slirp4netns" if slirp4netns (>= v0.4.0) is installed. Otherwise defaults to "vpnkit".
+DOCKERD_ROOTLESS_ROOTLESSKIT_MTU=NUM: the MTU value for the rootlesskit network driver. Defaults to 65520 for slirp4netns, 1500 for other drivers.
+DOCKERD_ROOTLESS_ROOTLESSKIT_PORT_DRIVER=(builtin|slirp4netns|implicit): the rootlesskit port driver. Defaults to "builtin".
+DOCKERD_ROOTLESS_ROOTLESSKIT_SLIRP4NETNS_SANDBOX=(auto|true|false): whether to protect slirp4netns with a dedicated mount namespace. Defaults to "auto".
+DOCKERD_ROOTLESS_ROOTLESSKIT_SLIRP4NETNS_SECCOMP=(auto|true|false): whether to protect slirp4netns with seccomp. Defaults to "auto".
 
 ## Usage example
 
