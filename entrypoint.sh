@@ -39,7 +39,10 @@ cleanup() {
 
 trap cleanup SIGTERM
 
-${HOME}/bin/dockerd-rootless.sh -H unix://${XDG_RUNTIME_DIR}/docker.sock -H unix:///run/docker.sock "$@" &
+#TODO refactor away having to sudo in the middle of this script
+sudo sysctl --system
+
+${HOME}/bin/dockerd-rootless.sh --iptables=false -H unix://${XDG_RUNTIME_DIR}/docker.sock -H unix:///run/docker.sock "$@" &
 
 ROOTLESS_PID=$!
 wait "${ROOTLESS_PID}"

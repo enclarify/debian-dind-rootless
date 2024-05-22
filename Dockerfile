@@ -1,7 +1,6 @@
 ARG DEBIAN_VERSION=11.8-slim
 FROM debian:${DEBIAN_VERSION}
 
-ENV CHANNEL=stable
 ENV ROOTLESS_UID=1000
 ENV HOME=/home/rootless
 
@@ -16,11 +15,9 @@ RUN apt-get update -y \
         curl \
         ca-certificates \
         iproute2 \
-        iptables \
         jq \
         sudo \
         uidmap \
-        fuse-overlayfs \
         procps \
         --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
@@ -29,18 +26,12 @@ RUN apt-get update -y \
 RUN --mount=type=bind,source=setup-rootless-users.sh,target=/usr/bin/setup-rootless-users.sh \
     setup-rootless-users.sh
 
-COPY entrypoint.sh /usr/bin/
-RUN chmod +x /usr/bin/entrypoint.sh \
-    && chown rootless:rootless /run
+RUN --mount=type=bind,source=install-docker-rootlesskit.sh,target=/usr/bin/install-docker-rootlesskit.sh \
+    install-docker-rootlesskit.sh ${HOME}/bin
 
-# rootlesskit needs to be installed by the rootless user
+COPY entrypoint.sh /usr/bin/    
+
 USER rootless
-RUN export SKIP_IPTABLES=1 \
-    && curl -fsSL https://get.docker.com/rootless | sh \
-    && echo "Removing the '--copy-up=/run' from the dockerd-rootless.sh to allow /run/docker.sock" \
-    && sed -i 's| --copy-up=/run||g' /home/rootless/bin/dockerd-rootless.sh \
-    && /home/rootless/bin/docker -v
-
 VOLUME /var/lib/docker
 VOLUME /home/rootless/.local/share/docker
 ENTRYPOINT ["/usr/bin/entrypoint.sh"]
