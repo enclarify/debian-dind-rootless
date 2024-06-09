@@ -26,7 +26,7 @@ RUN --mount=type=bind,source=build-scripts,target=/opt/build-scripts \
     /opt/build-scripts/setup-rootless-users.sh \
     && /opt/build-scripts/install-docker-rootlesskit.sh ${HOME}/bin
 
-COPY entrypoint.sh /usr/bin/    
+COPY runtime-scripts/* /usr/bin/
 
 USER rootless
 VOLUME /var/lib/docker
