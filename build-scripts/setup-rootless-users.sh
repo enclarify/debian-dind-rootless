@@ -6,7 +6,7 @@ echo "Adding rootless user"
 adduser --disabled-password --gecos "" --uid ${ROOTLESS_UID} rootless
 usermod -aG sudo rootless
 mkdir -p ${XDG_RUNTIME_DIR}
-chown -R rootless:rootless ${XDG_RUNTIME_DIR}
+chown rootless:rootless ${XDG_RUNTIME_DIR}
 chmod a+x ${XDG_RUNTIME_DIR}
 mkdir -p ${HOME}/bin
 mkdir -p ${HOME}/.config/docker
