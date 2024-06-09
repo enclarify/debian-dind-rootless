@@ -2,6 +2,7 @@ ARG DEBIAN_VERSION=11.8-slim
 FROM debian:${DEBIAN_VERSION}
 
 ENV ROOTLESS_UID=1000
+ENV DOCKER_GID=998
 ENV HOME=/home/rootless
 
 ENV PATH="${PATH}:${HOME}/.local/bin:${HOME}/bin"
@@ -22,14 +23,11 @@ RUN apt-get update -y \
         --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
 
-# Add users for rootlesskit
-RUN --mount=type=bind,source=setup-rootless-users.sh,target=/usr/bin/setup-rootless-users.sh \
-    setup-rootless-users.sh
+RUN --mount=type=bind,source=build-scripts,target=/opt/build-scripts \
+    /opt/build-scripts/setup-rootless-users.sh \
+    && /opt/build-scripts/install-docker-rootlesskit.sh ${HOME}/bin
 
-RUN --mount=type=bind,source=install-docker-rootlesskit.sh,target=/usr/bin/install-docker-rootlesskit.sh \
-    install-docker-rootlesskit.sh ${HOME}/bin
-
-COPY entrypoint.sh /usr/bin/    
+COPY runtime-scripts/* /usr/bin/
 
 USER rootless
 VOLUME /var/lib/docker
