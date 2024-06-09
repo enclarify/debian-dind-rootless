@@ -2,6 +2,7 @@ ARG DEBIAN_VERSION=11.8-slim
 FROM debian:${DEBIAN_VERSION}
 
 ENV ROOTLESS_UID=1000
+ENV DOCKER_GID=998
 ENV HOME=/home/rootless
 
 ENV PATH="${PATH}:${HOME}/.local/bin:${HOME}/bin"
