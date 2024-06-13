@@ -18,6 +18,7 @@ chown rootless:rootless /run
 echo "Creating docker group membership"
 addgroup docker --gid ${DOCKER_GID}
 usermod -aG docker rootless
+echo 'docker:231072:65536' >> /etc/subgid
 
 # Reference https://docs.docker.com/engine/security/userns-remap/
 echo 'Creating subuid and subgid to enable "--userns-remap=default"'
