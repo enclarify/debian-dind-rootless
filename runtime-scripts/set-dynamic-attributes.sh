@@ -12,5 +12,10 @@ sudo chown rootless:rootless /run
 echo "Updating docker gid"
 sudo groupmod --gid ${DOCKER_GID} docker
 
+if [ "${DOCKERD_ROOTLESS_ROOTLESSKIT_DEBUG}" = true ]; then
+    echo "Turning on rootlesskit debugging"
+    sed -i 's|exec $rootlesskit|exec $rootlesskit --debug|' ${HOME}/bin/dockerd-rootless.sh
+fi
+
 # apply kernel parameters
 sudo sysctl --system

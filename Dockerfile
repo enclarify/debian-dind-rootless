@@ -4,6 +4,7 @@ FROM debian:${DEBIAN_VERSION}
 ENV ROOTLESS_UID=1000
 ENV DOCKER_GID=998
 ENV HOME=/home/rootless
+ENV DOCKERD_ROOTLESS_ROOTLESSKIT_DEBUG=false
 
 ENV PATH="${PATH}:${HOME}/.local/bin:${HOME}/bin"
 ENV DOCKER_HOST="unix:///run/user/${ROOTLESS_UID}/docker.sock"

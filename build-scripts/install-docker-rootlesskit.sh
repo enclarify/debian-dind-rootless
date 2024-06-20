@@ -19,8 +19,8 @@ EOF
 
 mkdir -p /tmp/docker-download ${INSTALL_PATH}
 
-curl -L -o /tmp/docker-download/docker.tgz ${DOCKER_STATIC_BINARY_URL}
-curl -L -o /tmp/docker-download/rootless.tgz ${DOCKER_ROOTLESS_EXTRAS_STATIC_BINARY_URL}
+curl -sSL -o /tmp/docker-download/docker.tgz ${DOCKER_STATIC_BINARY_URL}
+curl -sSL -o /tmp/docker-download/rootless.tgz ${DOCKER_ROOTLESS_EXTRAS_STATIC_BINARY_URL}
 
 tar -zxf /tmp/docker-download/docker.tgz -C ${INSTALL_PATH} --strip-components=1
 tar -zxf /tmp/docker-download/rootless.tgz -C ${INSTALL_PATH} --strip-components=1
