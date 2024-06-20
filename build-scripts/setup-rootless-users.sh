@@ -21,13 +21,6 @@ usermod -aG docker rootless
 # https://github.com/moby/moby/issues/40225#issuecomment-555155183
 echo 'rootless:998:998' >> /etc/subgid
 
-# Reference https://docs.docker.com/engine/security/userns-remap/
-echo 'Creating subuid and subgid to enable "--userns-remap=default"'
-addgroup --system dockremap
-adduser --system --ingroup dockremap dockremap
-echo 'dockremap:165536:65536' >> /etc/subuid
-echo 'dockremap:165536:65536' >> /etc/subgid
-
 echo "Setting up passwordless sudo"
 echo "%sudo   ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers
 echo "Defaults !env_reset" >> /etc/sudoers
