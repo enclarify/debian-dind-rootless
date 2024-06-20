@@ -2,6 +2,13 @@
 
 set -e
 
+# allows all system groups to be mapping into 
+# rootless user namespace. This allows supplimental groups
+# like 'docker' on the host to be properly mapped into 
+# rootless containers
+# TODO scope this smaller in the future
+echo "rootless:1:999" >> /etc/subgid
+
 echo "Adding rootless user"
 adduser --disabled-password --gecos "" --uid ${ROOTLESS_UID} rootless
 usermod -aG sudo rootless
@@ -18,8 +25,6 @@ chown rootless:rootless /run
 echo "Creating docker group membership"
 addgroup docker --gid ${DOCKER_GID}
 usermod -aG docker rootless
-# https://github.com/moby/moby/issues/40225#issuecomment-555155183
-echo 'rootless:998:998' >> /etc/subgid
 
 echo "Setting up passwordless sudo"
 echo "%sudo   ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers
