@@ -17,6 +17,7 @@ RUN apt-get update -y \
         curl \
         ca-certificates \
         iproute2 \
+        iptables \
         jq \
         sudo \
         uidmap \
