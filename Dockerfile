@@ -18,6 +18,7 @@ RUN apt-get update -y \
         ca-certificates \
         iproute2 \
         iptables \
+        slirp4netns \
         jq \
         sudo \
         uidmap \
