@@ -15,6 +15,7 @@ kernel.unprivileged_userns_clone=1
 user.max_user_namespaces=28633
 net.ipv4.ping_group_range=0 4294967294
 net.ipv4.ip_unprivileged_port_start=0
+net.ipv4.ip_forward=1
 EOF
 
 mkdir -p /tmp/docker-download ${INSTALL_PATH}

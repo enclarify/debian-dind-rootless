@@ -1,5 +1,26 @@
 ARG DEBIAN_VERSION=11.8-slim
-FROM debian:${DEBIAN_VERSION}
+FROM golang:1.22.4-bullseye AS bypass4netns
+ENV DEBIAN_FRONTEND=noninteractive
+ENV BYPASS4NETNS_VERSION=0.4.1
+RUN apt-get update \
+    && apt-get install -y \
+        curl \
+        ca-certificates \
+        build-essential \
+        libseccomp2 \
+        libseccomp-dev \
+        --no-install-recommends \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN curl -sSL https://github.com/rootless-containers/bypass4netns/archive/refs/tags/v${BYPASS4NETNS_VERSION}.tar.gz > /tmp/bypass4netns.tar.gz \
+    && tar -C /tmp -zxvf /tmp/bypass4netns.tar.gz \
+    && cd /tmp/bypass4netns-${BYPASS4NETNS_VERSION} \
+    && make \
+    && mkdir -p /bin/bypass4netns \
+    && cp bypass4netns* /bin/bypass4netns
+
+
+FROM debian:${DEBIAN_VERSION} AS main
 
 ENV ROOTLESS_UID=1000
 ENV DOCKER_GID=998
@@ -13,7 +34,7 @@ ENV XDG_CONFIG_HOME="${HOME}/.config"
 
 ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get update -y \
-    && apt-get install -y --no-install-recommends \
+    && apt-get install -y \
         curl \
         ca-certificates \
         iproute2 \
@@ -23,8 +44,12 @@ RUN apt-get update -y \
         sudo \
         uidmap \
         procps \
+        libseccomp2 \
         --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
+
+COPY --from=bypass4netns /bin/bypass4netns/* /bin
+COPY bypass4netns-seccomp.json /home/rootless/.config/docker/bypass4netns-seccomp.json
 
 RUN --mount=type=bind,source=build-scripts,target=/opt/build-scripts \
     /opt/build-scripts/setup-rootless-users.sh \

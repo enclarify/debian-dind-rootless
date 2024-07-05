@@ -39,7 +39,14 @@ cleanup() {
 
 trap cleanup SIGTERM
 
-${HOME}/bin/dockerd-rootless.sh -H unix://${XDG_RUNTIME_DIR}/docker.sock -H unix:///run/docker.sock "$@" &
+BYPASS4NETNS_DEBUG_OPTION=
+if [ "${BYPASS4NETNS_DEBUG}" = true ]; then
+    echo "Turning on bypass4netns debugging"
+    BYPASS4NETNS_DEBUG_OPTION="--debug"
+fi
+
+bypass4netns ${BYPASS4NETNS_DEBUG_OPTION} --ignore="127.0.0.0/8,10.0.0.0/8,172.0.0.0/8,auto" -p="8080:80" &
+${HOME}/bin/dockerd-rootless.sh --seccomp-profile=/home/rootless/.config/docker/bypass4netns-seccomp.json -H unix://${XDG_RUNTIME_DIR}/docker.sock -H unix:///run/docker.sock "$@" &
 
 ROOTLESS_PID=$!
 wait "${ROOTLESS_PID}"
