@@ -28,7 +28,6 @@ tar -zxf /tmp/docker-download/rootless.tgz -C ${INSTALL_PATH} --strip-components
 ${INSTALL_PATH}/docker -v
 
 chown rootless:rootless /run
-chown rootless:rootless ${INSTALL_PATH}
 
 echo "Removing the '--copy-up=/run' from the dockerd-rootless.sh to allow /run/docker.sock"
 sed -i 's| --copy-up=/run||g' ${INSTALL_PATH}/dockerd-rootless.sh
