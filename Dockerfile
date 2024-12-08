@@ -28,7 +28,7 @@ RUN apt-get update -y \
 
 RUN --mount=type=bind,source=build-scripts,target=/opt/build-scripts \
     /opt/build-scripts/setup-rootless-users.sh \
-    && /opt/build-scripts/install-docker-rootlesskit.sh /usr/bin
+    && /opt/build-scripts/install-docker-rootlesskit.sh
 
 COPY runtime-scripts/* /usr/bin/
 

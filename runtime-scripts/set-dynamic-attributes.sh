@@ -14,7 +14,7 @@ sudo groupmod --gid ${DOCKER_GID} docker
 
 if [ "${DOCKERD_ROOTLESS_ROOTLESSKIT_DEBUG}" = true ]; then
     echo "Turning on rootlesskit debugging"
-    sed -i 's|exec $rootlesskit|exec $rootlesskit --debug|' ${HOME}/bin/dockerd-rootless.sh
+    sed -i 's|exec $rootlesskit|exec $rootlesskit --debug|' /usr/bin/dockerd-rootless.sh
 fi
 
 # apply kernel parameters
